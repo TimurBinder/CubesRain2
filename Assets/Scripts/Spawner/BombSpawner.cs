@@ -1,23 +1,19 @@
 using UnityEngine;
 
-public class BombSpawner : Spawner<Bomb>
+public class BombSpawner : SubstitudableSpawner<Bomb>
 {
-    public void Substitude(Cube cube)
-    {
-        Bomb bomb = Pool.Get();
-        bomb.transform.rotation = Quaternion.identity;
-        bomb.transform.position = cube.transform.position;
-    }
+    [SerializeField] private EffectSpawner _effectSpawner;
 
     protected override void OnActionGet(Bomb bomb)
     {
-        bomb.Disabled += Pool.Release;
+        bomb.Destroyed += Pool.Release;
         base.OnActionGet(bomb);
     }
 
     protected override void OnActionRelease(Bomb bomb)
     {
-        bomb.Disabled -= Pool.Release;
+        bomb.Destroyed -= Pool.Release;
+        _effectSpawner.Substitude(bomb.transform);
         base.OnActionRelease(bomb);
     }
 }

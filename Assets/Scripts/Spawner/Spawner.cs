@@ -8,9 +8,11 @@ public class Spawner<T> : MonoBehaviour where T : MonoBehaviour
     [SerializeField] private int _maxSize;
     [SerializeField] private int _defaultCapacity;
 
+    private int _totalCount;
     protected ObjectPool<T> Pool;
 
     public event Action<int> TotalCountChanged;
+    public event Action<int> CreatedCountChanged;
     public event Action<int> ActiveCountChanged;
 
     protected virtual void Awake()
@@ -28,7 +30,7 @@ public class Spawner<T> : MonoBehaviour where T : MonoBehaviour
 
     protected virtual T CreateInstance()
     {
-        TotalCountChanged?.Invoke(Pool.CountAll + 1);
+        CreatedCountChanged?.Invoke(Pool.CountAll + 1);
         return Instantiate(_prefab);
     }
 
@@ -36,6 +38,8 @@ public class Spawner<T> : MonoBehaviour where T : MonoBehaviour
     {
         obj.gameObject.SetActive(true);
         ActiveCountChanged?.Invoke(Pool.CountActive);
+        _totalCount++;
+        TotalCountChanged?.Invoke(_totalCount);
     }
 
     protected virtual void OnActionRelease(T obj)
@@ -47,6 +51,6 @@ public class Spawner<T> : MonoBehaviour where T : MonoBehaviour
     protected virtual void OnActionDestroy(T obj)
     {
         Destroy(obj.gameObject);
-        TotalCountChanged?.Invoke(Pool.CountAll);
+        CreatedCountChanged?.Invoke(Pool.CountAll);
     }
 }

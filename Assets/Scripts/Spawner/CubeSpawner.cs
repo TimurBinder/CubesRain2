@@ -28,15 +28,15 @@ public class CubeSpawner : Spawner<Cube>
         position.y = _positionY;
         cube.transform.position = position;
         cube.transform.rotation = Quaternion.identity;
-        cube.Disabled += Pool.Release;
+        cube.Destroyed += Pool.Release;
         base.OnActionGet(cube);
     }
 
     protected override void OnActionRelease(Cube cube)
     {
         base.OnActionRelease(cube);
-        cube.Disabled -= Pool.Release;
-        _bombSpawner.Substitude(cube);
+        cube.Destroyed -= Pool.Release;
+        _bombSpawner.Substitude(cube.transform);
     }
 
     private IEnumerator Getting()
